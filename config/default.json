@@ -1,0 +1,10 @@
+{
+    "app": {
+        "swagger": {
+            "title": "Water Gas Gemini API",
+            "route": "api",
+            "description": "Water and gas consumption reading service",
+            "version": "1.0"
+        }
+    }
+}

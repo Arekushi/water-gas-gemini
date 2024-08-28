@@ -1,8 +1,15 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { Logger } from '@nestjs/common';
+import { App } from '@src/app';
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  await app.listen(3000);
-}
-bootstrap();
+export const run = async (): Promise<void> => {
+    const app = new App();
+
+    await app.init();
+    await app.listen();
+};
+
+run().catch(
+    (err) => {
+        Logger.log(err)
+    }
+);
