@@ -1,17 +1,19 @@
+import * as uuid from 'uuid';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@core/services/prisma.service';
 import { GeminiService } from '@gemini/services/gemini.service';
 import { ImageService } from '@image/services/image.service';
 
-import { CreateMeasureRequest } from '@measure/domain/requests/measure.request';
 import { UploadRequest } from '@measure/domain/requests/upload.request';
 import { MEASURE_PROMPT } from '@measure/measure.constants';
 import { recoverNumber } from '@measure/helpers/gemini-response.helper';
+import { UploadSuccessResponse } from '@measure/domain/responses/upload.response';
+import { ConfirmRequest } from '@measure/domain/requests/confirm.request';
+import { ConfirmResponse } from '@measure/domain/responses/confirm.response';
+
 import { Advice, UseAspect } from '@arekushii/ts-aspect';
 import { CheckMonthMeasureAspect } from '@measure/aspects/check-month-measure.aspect';
-import { UploadSuccessResponse } from '@measure/domain/responses/upload.response';
-
-import * as uuid from 'uuid';
+import { ValidateMeasureAspect } from '@measure/aspects/validate-measure.aspect';
 
 @Injectable()
 export class MeasureService {
@@ -22,7 +24,7 @@ export class MeasureService {
         public readonly imageService: ImageService
     ) { }
 
-    // @UseAspect(Advice.Before, CheckMonthMeasureAspect)
+    @UseAspect(Advice.Before, CheckMonthMeasureAspect)
     async register(
         request: UploadRequest
     ): Promise<UploadSuccessResponse> {
@@ -69,6 +71,27 @@ export class MeasureService {
             imageUrl: measure.imageUrl,
             measureUuid: measure.id,
             measureValue: measure.value
+        };
+    }
+
+    @UseAspect(Advice.Before, ValidateMeasureAspect)
+    async confirm(
+        request: ConfirmRequest
+    ): Promise<ConfirmResponse> {
+        const { confirmedValue, measureUuid } = request;
+
+        const measure = await this.prisma.measure.update({
+            where: {
+                id: measureUuid
+            },
+            data: {
+                hasConfirmed: true,
+                value: confirmedValue
+            }
+        });
+
+        return {
+            success: measure !== undefined
         };
     }
 
