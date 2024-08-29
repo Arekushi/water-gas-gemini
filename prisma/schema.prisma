@@ -23,22 +23,24 @@ model Customer {
 }
 
 model Measure {
-    id            String      @id @default(uuid())
-    type          MeasureType @relation(fields: [measureTypeId], references: [id])
-    customer      Customer    @relation(fields: [customerId], references: [id])
-    customerId    String
-    measureTypeId String
-    hasConfirmed  Boolean     @default(false)
-    imageUrl      String
-    createdAt     DateTime    @default(now())
-    updatedAt     DateTime    @updatedAt
+    id              String      @id @default(uuid())
+    type            MeasureType @relation(fields: [measureTypeId], references: [id])
+    customer        Customer    @relation(fields: [customerId], references: [id])
+    customerId      String
+    measureTypeId   String
+    hasConfirmed    Boolean     @default(false)
+    imageUrl        String
+    measurementDate DateTime
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     @@map("measure")
 }
 
 model MeasureType {
     id      String    @id @default(uuid())
-    name    String
+    name    String    @unique
     Measure Measure[]
 
     @@map("measure_type")
