@@ -10,8 +10,8 @@ export interface GeminiConfig {
 
 const geminiConfig: GeminiConfig = {
     KEY: process.env.GEMINI_API_KEY,
-    PRO_MODEL: process.env.GEMINI_PRO_MODEL || 'gemini-pro',
-    PRO_VISION_MODEL: process.env.GEMINI_PRO_VISION_MODEL || 'gemini-pro-vision'
+    PRO_MODEL: process.env.GEMINI_PRO_MODEL || 'gemini-1.5-flash',
+    PRO_VISION_MODEL: process.env.GEMINI_PRO_VISION_MODEL || 'gemini-1.5-flash'
 }
 
 export { geminiConfig }
