@@ -9,5 +9,5 @@ export const recoverNumber = (
         return parseInt(match[1]);
     }
 
-    throw { error: 'a' }
+    return NaN;
 }

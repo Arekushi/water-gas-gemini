@@ -1,6 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@core/services/prisma.service';
 import { GeminiService } from '@gemini/services/gemini.service';
+import { ImageService } from '@image/services/image.service';
 
 import { CreateMeasureRequest } from '@measure/domain/requests/measure.request';
 import { UploadRequest } from '@measure/domain/requests/upload.request';
@@ -10,17 +11,18 @@ import { Advice, UseAspect } from '@arekushii/ts-aspect';
 import { CheckMonthMeasureAspect } from '@measure/aspects/check-month-measure.aspect';
 import { UploadSuccessResponse } from '@measure/domain/responses/upload.response';
 
+import * as uuid from 'uuid';
 
 @Injectable()
 export class MeasureService {
     
     constructor(
         public readonly prisma: PrismaService,
-        public readonly gemini: GeminiService
+        public readonly gemini: GeminiService,
+        public readonly imageService: ImageService
     ) { }
 
-
-    @UseAspect(Advice.Before, CheckMonthMeasureAspect)
+    // @UseAspect(Advice.Before, CheckMonthMeasureAspect)
     async register(
         request: UploadRequest
     ): Promise<UploadSuccessResponse> {
@@ -31,10 +33,19 @@ export class MeasureService {
             measureType
         } = request;
 
+        const id = uuid.v4();
+
+        const { imageBase64, url } = await this.imageService.saveImage({
+            image: image,
+            filename: id
+        });
+        const geminiResponse = await this.measure(imageBase64);
+
         const measure = await this.prisma.measure.create({
             data: {
-                imageUrl: 'null',
-                value: 0,
+                id: id,
+                imageUrl: url,
+                value: geminiResponse,
                 measurementDate: measureDatetime,
                 type: {
                     connect: {
@@ -55,17 +66,17 @@ export class MeasureService {
         });
 
         return {
-            imageUrl: '',
+            imageUrl: measure.imageUrl,
             measureUuid: measure.id,
             measureValue: measure.value
         };
     }
 
     async measure(
-        image: string
+        imageBase64: string
     ): Promise<number> {
         const result = await this.gemini.analyzeImage({
-            image,
+            image: imageBase64,
             prompt: MEASURE_PROMPT
         });
 

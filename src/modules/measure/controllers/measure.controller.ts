@@ -17,6 +17,7 @@ import {
 import { MeasureService } from '@measure/services/measure.service';
 import { UploadRequest } from '@measure/domain/requests/upload.request';
 import { UploadSuccessResponse } from '@measure/domain/responses/upload.response';
+import { ConfirmRequest } from '@measure/domain/requests/confirm.request';
 
 @ApiTags('Measure')
 @Controller('measure')
@@ -52,5 +53,9 @@ export class MeasureController {
         return await this.service.register(request);
     }
 
-    async confirm(): Promise<void> {}
+    async confirm(
+        @Body() request: ConfirmRequest
+    ): Promise<void> {
+
+    }
 }
