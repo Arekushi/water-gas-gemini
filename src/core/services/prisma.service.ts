@@ -7,17 +7,13 @@ import {
     OnModuleInit
 } from '@nestjs/common';
 
-import { ConfigService } from '@nestjs/config';
-
 
 @Injectable()
 export class PrismaService
     extends PrismaClient
     implements OnModuleInit, OnModuleDestroy {
 
-    constructor(
-        public config: ConfigService
-    ) {
+    constructor() {
         super();
     }
 
