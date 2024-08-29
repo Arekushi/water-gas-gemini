@@ -1,5 +1,3 @@
-import { ExceptionActionAspect } from '@core/aspects/exception-action.aspect';
-import { UseAspect, Advice } from '@arekushii/ts-aspect';
 import { PrismaClient } from '@prisma/client';
 import {
     Injectable,
@@ -17,7 +15,6 @@ export class PrismaService
         super();
     }
 
-    @UseAspect(Advice.TryCatch, ExceptionActionAspect)
     async onModuleInit(): Promise<void> {
         await this.$connect();
     }
