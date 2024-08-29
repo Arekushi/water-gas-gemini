@@ -1,0 +1,41 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Project "water-gas-gemini-api" {
+  database_type: 'sqlite'
+  Note: ''
+}
+
+Table customer {
+  id String [pk]
+  measures measure [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table measure {
+  id String [pk]
+  type measure_type [not null]
+  customer customer [not null]
+  customerId String [not null]
+  value Int [not null, default: 0]
+  measureTypeId String [not null]
+  hasConfirmed Boolean [not null, default: false]
+  imageUrl String [not null]
+  measurementDate DateTime [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table measure_type {
+  id String [pk]
+  name String [unique, not null]
+  measure measure [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Ref: measure.measureTypeId > measure_type.id
+
+Ref: measure.customerId > customer.id
