@@ -27,6 +27,7 @@ model Measure {
     type            MeasureType @relation(fields: [measureTypeId], references: [id])
     customer        Customer    @relation(fields: [customerId], references: [id])
     customerId      String
+    value           Int         @default(0)
     measureTypeId   String
     hasConfirmed    Boolean     @default(false)
     imageUrl        String
