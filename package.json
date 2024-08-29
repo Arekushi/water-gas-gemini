@@ -42,12 +42,9 @@
         "@nestjs/platform-express": "^9.0.0",
         "@nestjs/swagger": "^7.4.0",
         "@prisma/client": "^5.19.0",
-        "axios": "^1.7.5",
         "base64-image-mime": "^1.0.2",
         "class-transformer": "^0.5.1",
         "class-validator": "^0.14.1",
-        "i": "^0.3.7",
-        "npm": "^10.8.3",
         "reflect-metadata": "^0.1.13",
         "rxjs": "^7.2.0",
         "serialize-interceptor": "^1.1.6",
@@ -107,7 +104,7 @@
         "testEnvironment": "node"
     },
     "engines": {
-        "node": "19.x",
-        "npm": "9.x"
+        "node": "20.x",
+        "npm": "10.x"
     }
 }
