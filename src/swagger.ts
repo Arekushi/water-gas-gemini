@@ -1,12 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-
-export interface SwaggerConfig {
-    title: string;
-    route: string;
-    description: string;
-    version: string;
-}
+import { SwaggerConfig } from '@configs/app.config';
 
 export const setupSwagger = (
     app: INestApplication,

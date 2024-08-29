@@ -6,9 +6,11 @@
         "declarationDir": "./dist",
         "paths": {
             "@src/*": ["./src/*"],
+            "@configs/*": ["./src/configs/*"],
             "@core/*": ["./src/core/*"],
             "@modules/*": ["./src/modules/*"],
-            "@measure/*": ["./src/modules/measure/*"]
+            "@measure/*": ["./src/modules/measure/*"],
+            "@gemini/*": ["./src/modules/gemini/*"]
         },
         "module": "CommonJS",
         "target": "ES2017",
