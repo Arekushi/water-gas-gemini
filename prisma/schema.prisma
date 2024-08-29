@@ -16,8 +16,8 @@ datasource db {
 model Customer {
     id        String    @id @default(uuid())
     measures  Measure[]
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
+    createdAt DateTime  @default(now()) @map("created_at")
+    updatedAt DateTime  @updatedAt @map("updated_at")
 
     @@map("customer")
 }
@@ -26,23 +26,24 @@ model Measure {
     id              String      @id @default(uuid())
     type            MeasureType @relation(fields: [measureTypeId], references: [id])
     customer        Customer    @relation(fields: [customerId], references: [id])
-    customerId      String
+    customerId      String      @map("customer_id")
     value           Int         @default(0)
-    measureTypeId   String
-    hasConfirmed    Boolean     @default(false)
-    imageUrl        String
-    measurementDate DateTime
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    measureTypeId   String      @map("measure_type_id")
+    hasConfirmed    Boolean     @default(false) @map("has_confirmed")
+    imageUrl        String      @map("image_url")
+    measurementDate DateTime    @map("measurement_date")
+    createdAt       DateTime    @default(now()) @map("created_at")
+    updatedAt       DateTime    @updatedAt @map("updated_at")
 
     @@map("measure")
 }
 
 model MeasureType {
-    id      String    @id @default(uuid())
-    name    String    @unique
-    Measure Measure[]
+    id        String    @id @default(uuid())
+    name      String    @unique
+    measure   Measure[]
+    createdAt DateTime  @default(now()) @map("created_at")
+    updatedAt DateTime  @updatedAt @map("updated_at")
 
     @@map("measure_type")
 }
