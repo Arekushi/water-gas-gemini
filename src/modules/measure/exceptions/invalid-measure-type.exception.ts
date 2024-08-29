@@ -5,8 +5,8 @@ export class InvalidMeasureTypeException extends AppException {
 
     constructor () {
         super({
-            error_code: 'INVALID_TYPE',
-            error_message: 'Tipo de medição não  permitida'
+            errorCode: 'INVALID_TYPE',
+            errorDescription: 'Tipo de medição não permitida'
         }, HttpStatus.BAD_REQUEST);
     }
 }

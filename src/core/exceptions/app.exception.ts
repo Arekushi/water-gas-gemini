@@ -8,8 +8,8 @@ export class AppException extends HttpException {
     ) {
         super(
             {
-                error_code: error.error_code,
-                error_description: error.error_message
+                error_code: error.errorCode,
+                error_description: error.errorDescription
             },
             status,
         );

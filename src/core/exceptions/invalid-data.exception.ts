@@ -10,8 +10,8 @@ export class InvalidDataException extends AppException {
         }).join('; ');
 
         super({
-            error_code: 'INVALID_DATA',
-            error_message: errorMessages
+            errorCode: 'INVALID_DATA',
+            errorDescription: errorMessages
         }, HttpStatus.BAD_REQUEST);
     }
 }

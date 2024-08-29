@@ -5,8 +5,8 @@ export class DoubleReportException extends AppException {
 
     constructor () {
         super({
-            error_code: 'DOUBLE_REPORT',
-            error_message: 'Leitura do mês já  realizada'
+            errorCode: 'DOUBLE_REPORT',
+            errorDescription: 'Leitura do mês já realizada'
         }, HttpStatus.CONFLICT);
     }
 }

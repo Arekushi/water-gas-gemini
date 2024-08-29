@@ -5,10 +5,10 @@ export class MeasureNotFoundException extends AppException {
 
     constructor () {
         super({
-            error_code: 'MEASURE_NOT_FOUND',
+            errorCode: 'MEASURE_NOT_FOUND',
             // no arquivo estava escrito de forma errônea,
             // então decidi mudar para se adequar melhor
-            error_message: 'Leitura não encontrada'
+            errorDescription: 'Leitura não encontrada'
         }, HttpStatus.NOT_FOUND);
     }
 }

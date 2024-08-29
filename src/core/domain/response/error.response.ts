@@ -2,8 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ErrorResponse {
     @ApiProperty()
-    error_code: string
+    errorCode: string
 
     @ApiProperty()
-    error_message: string
+    errorDescription: string
 }
