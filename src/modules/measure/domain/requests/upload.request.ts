@@ -1,4 +1,5 @@
 import { MeasureType } from '@measure/enums/measure-type.enum'
+import { Transform } from 'class-transformer';
 import { IsBase64, IsDateString, IsEnum, IsNotEmpty, IsString } from 'class-validator'
 
 export class UploadRequest {
@@ -15,6 +16,7 @@ export class UploadRequest {
     measureDatetime: string;
 
     @IsNotEmpty()
+    @Transform(({ value }) => value.toUpperCase())
     @IsEnum(MeasureType)
     measureType: MeasureType;
 }

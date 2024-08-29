@@ -1,4 +1,4 @@
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, Logger } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { SwaggerConfig } from '@configs/app.config';
 
@@ -9,7 +9,7 @@ export const setupSwagger = (
     try {
         SwaggerModule.setup(cfg.route, app, createDocument(app, cfg));
     } catch (err) {
-        console.log(err);
+        Logger.log(err);
     }
 };
 

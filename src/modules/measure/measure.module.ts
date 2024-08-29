@@ -6,8 +6,12 @@ import { GeminiModule } from '@gemini/gemini.module';
 import { ImageModule } from '@image/image.module';
 
 import { InvalidDataException } from '@core/exceptions/invalid-data.exception';
-import { MeasureService } from '@measure/services/measure.service';
+
 import { MeasureController } from '@measure/controllers/measure.controller';
+import { CustomerController } from '@measure/controllers/customer.controller';
+
+import { MeasureService } from '@measure/services/measure.service';
+import { CustomerService } from '@measure/services/customer.service';
 
 @Module({
     imports: [
@@ -16,15 +20,31 @@ import { MeasureController } from '@measure/controllers/measure.controller';
         ImageModule
     ],
     controllers: [
-        MeasureController
+        MeasureController,
+        CustomerController
     ],
     providers: [
         MeasureService,
+        CustomerService,
         {
             provide: APP_PIPE,
             useValue: new ValidationPipe({
                 whitelist: true,
-                exceptionFactory: (errors) => new InvalidDataException(errors)
+                exceptionFactory: (errors) => {
+                    for (const error of errors) {
+                        if (!error.contexts) {
+                            continue;
+                        }
+                                                
+                        for (const context of Object.values(error.contexts)) {
+                            if (context.exception) {
+                                return new context.exception()
+                            }
+                        }
+                    }
+
+                    return new InvalidDataException(errors);
+                }
             })
         }
     ],
