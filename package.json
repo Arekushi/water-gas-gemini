@@ -50,7 +50,13 @@
         "reflect-metadata": "^0.1.13",
         "rxjs": "^7.2.0",
         "serialize-interceptor": "^1.1.6",
+        "sharp": "^0.33.5",
+        "uuid": "^10.0.0",
         "yaspar": "^1.0.1"
+    },
+    "optionalDependencies": {
+        "@img/sharp-win32-x64": "^0.33.5",
+        "@img/sharp-linux-x64": "^0.33.5"
     },
     "devDependencies": {
         "@nestjs/cli": "^9.0.0",
@@ -62,6 +68,7 @@
         "@types/multer": "^1.4.12",
         "@types/node": "^18.11.18",
         "@types/supertest": "^2.0.11",
+        "@types/uuid": "^10.0.0",
         "@typescript-eslint/eslint-plugin": "^5.0.0",
         "@typescript-eslint/parser": "^5.0.0",
         "cross-env": "^7.0.3",
@@ -98,7 +105,7 @@
         "testEnvironment": "node"
     },
     "engines": {
-        "node": "16.x",
-        "npm": "8.x"
+        "node": "19.x",
+        "npm": "9.x"
     }
 }
