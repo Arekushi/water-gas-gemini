@@ -5,8 +5,13 @@
     "compilerOptions": {
         "assets": [
             {
-                "include": "./src/assets",
-                "outDir": "./dist/src",
+                "include": "./assets",
+                "outDir": "./dist",
+                "watchAssets": true
+            },
+            {
+                "include": "./uploads",
+                "outDir": "./dist",
                 "watchAssets": true
             }
         ]

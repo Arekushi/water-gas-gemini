@@ -10,7 +10,8 @@
             "@core/*": ["./src/core/*"],
             "@modules/*": ["./src/modules/*"],
             "@measure/*": ["./src/modules/measure/*"],
-            "@gemini/*": ["./src/modules/gemini/*"]
+            "@gemini/*": ["./src/modules/gemini/*"],
+            "@image/*": ["./src/modules/image/*"]
         },
         "module": "CommonJS",
         "target": "ES2017",
