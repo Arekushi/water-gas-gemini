@@ -5,6 +5,8 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR, Reflector } from '@nestjs/core';
 import { LoggerInterceptor } from '@core/interceptor/logger.interceptor';
 import { LoggerExceptionFilter } from '@core/filters/logger.filter';
+import { MeasureModule } from '@measure/measure.module';
+import { AppExceptionFilter } from '@core/filters/app-exception.filter';
 
 const env = process.env.NODE_ENV;
 const envFilePath = !env ? '.env' : `.env.${env}`
@@ -16,6 +18,7 @@ const envFilePath = !env ? '.env' : `.env.${env}`
             isGlobal: true,
             envFilePath: envFilePath,
         }),
+        MeasureModule
     ],
     controllers: [],
     providers: [
@@ -26,6 +29,10 @@ const envFilePath = !env ? '.env' : `.env.${env}`
         {
             provide: APP_FILTER,
             useClass: LoggerExceptionFilter
+        },
+        {
+            provide: APP_FILTER,
+            useClass: AppExceptionFilter
         },
         {
             provide: APP_INTERCEPTOR,
