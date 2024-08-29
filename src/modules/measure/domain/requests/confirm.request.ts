@@ -3,9 +3,9 @@ import { IsInt, IsNotEmpty, IsUUID } from 'class-validator'
 export class ConfirmRequest {
     @IsNotEmpty()
     @IsUUID()
-    measure_uuid: string
+    measureUuid: string;
 
     @IsNotEmpty()
     @IsInt()
-    confirmed_value: number
+    confirmedValue: number;
 }

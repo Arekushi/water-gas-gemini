@@ -4,17 +4,17 @@ import { IsBase64, IsDateString, IsEnum, IsNotEmpty, IsString } from 'class-vali
 export class UploadRequest {
     @IsNotEmpty()
     @IsBase64()
-    image: string
+    image: string;
 
     @IsNotEmpty()
     @IsString()
-    customer_code: string
+    customerCode: string;
 
     @IsNotEmpty()
     @IsDateString()
-    measure_datetime: string
+    measureDatetime: string;
 
     @IsNotEmpty()
     @IsEnum(MeasureType)
-    measure_type: MeasureType
+    measureType: MeasureType;
 }
