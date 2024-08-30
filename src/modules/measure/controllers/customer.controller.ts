@@ -30,6 +30,6 @@ export class CustomerController {
         @Param('customerId') customerId: string,
         @Query() query?: MeasureQueryRequest,
     ): Promise<ListMeasuresCustomerResponse> {
-        return await this.service.listMeasures(customerId, query.measure_type);
+        return await this.service.listMeasures(customerId, query?.measure_type);
     }
 }
