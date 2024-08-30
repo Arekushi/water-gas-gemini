@@ -8,7 +8,7 @@ RUN npm install --quiet --loglevel=error
 
 RUN npm run build
 
-EXPOSE 8787
+EXPOSE 3000
 
 EXPOSE 35000
 

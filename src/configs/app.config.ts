@@ -17,7 +17,7 @@ export interface SwaggerConfig {
 
 const appConfig: AppConfig = {
     globalPrefix: 'api',
-    port: parseInt(process.env.PORT) || 8080,
+    port: parseInt(process.env.PORT) || 3000,
     url: process.env.URL || 'http://localhost',
     swagger: {
         enabled: toBoolean(process.env.SWAGGER) || true,

@@ -10,7 +10,7 @@ services:
             - PORT=3000
             - NODE_ENV=production
         ports:
-            - '8787:3000'
+            - '3000:3000'
     
     postgres:
         image: postgres
