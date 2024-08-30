@@ -3,66 +3,66 @@ import * as uuid from 'uuid';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MeasureType } from '@measure/enums/measure-type.enum';
 import { CustomerService } from '@measure/services/customer.service';
-import { InvalidMeasureTypeException } from '@measure/exceptions/invalid-measure-type.exception';
 import { MeasuresNotFoundException } from '@measure/exceptions/measures-not-found.exception';
 import { PrismaService } from '@src/core/services/prisma.service';
 
 const UUIDS = Array.from({ length: 5 }, () => uuid.v4());
+const DATETIMES = Array.from({ length: 5 }, () => new Date());
 
 const RESPONSES = {
-    measuresPrismaResponse: {
+    prismaFindMany: {
         default: [
             {
                 id: UUIDS[1],
-                measurementDate: new Date(),
+                measurementDate: DATETIMES[0],
                 type: { name: 'WATER' },
                 hasConfirmed: true,
                 imageUrl: 'URL'
             },
             {
                 id: UUIDS[2],
-                measurementDate: new Date(),
+                measurementDate: DATETIMES[1],
                 type: { name: 'GAS' },
                 hasConfirmed: false,
                 imageUrl: 'URL'
             }
         ],
-        only_water: [
+        onlyWater: [
             {
                 id: UUIDS[1],
-                measurementDate: new Date(),
+                measurementDate: DATETIMES[0],
                 type: { name: 'WATER' },
                 hasConfirmed: true,
                 imageUrl: 'URL'
-            }
+            },
         ]
     },
-    measuresResponse: {
+    listMeasures: {
         default: {
             customerCode: UUIDS[0],
             measures: [
                 {
                     measureUuid: UUIDS[1],
-                    measureDatetime: new Date().toISOString(),
+                    measureDatetime: DATETIMES[0].toISOString(),
                     measureType: MeasureType.WATER,
                     hasConfirmed: true,
                     imageUrl: 'URL'
                 },
                 {
                     measureUuid: UUIDS[2],
-                    measureDatetime: new Date().toISOString(),
+                    measureDatetime: DATETIMES[1].toISOString(),
                     measureType: MeasureType.GAS,
                     hasConfirmed: false,
                     imageUrl: 'URL'
                 }
             ]
         },
-        only_water: {
+        onlyWater: {
             customerCode: UUIDS[0],
             measures: [
                 {
                     measureUuid: UUIDS[1],
-                    measureDatetime: new Date().toISOString(),
+                    measureDatetime: DATETIMES[0].toISOString(),
                     measureType: MeasureType.WATER,
                     hasConfirmed: true,
                     imageUrl: 'URL'
@@ -73,11 +73,10 @@ const RESPONSES = {
 }
 
 const EXCEPTIONS = {
-    invalidType: new InvalidMeasureTypeException(),
     measuresNotFound: new MeasuresNotFoundException()
 }
 
-describe('MeasureService', () => {
+describe('CustomerService', () => {
     let customerService: CustomerService;
 
     const mockPrismaService = {
@@ -100,35 +99,58 @@ describe('MeasureService', () => {
         customerService = module.get<CustomerService>(CustomerService);
     });
 
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
     it('should be defined', () => {
         expect(customerService).toBeDefined();
     });
 
     describe('listMeasures', () => {
-        it('should list all of a clients measures', async () => {
+        it('should list all measures of a client', async () => {
             // Arrange
             jest.spyOn(mockPrismaService.measure, 'findMany').mockResolvedValueOnce(
-                RESPONSES.measuresPrismaResponse.default
+                RESPONSES.prismaFindMany.default
             );
 
             // Act
-            const result = await customerService.listMeasures(UUIDS[0], undefined)
+            const response = await customerService.listMeasures(
+                UUIDS[0]
+            );
 
             // Assert
-            expect(result).toEqual(RESPONSES.measuresResponse.default);
+            expect(response).toEqual(RESPONSES.listMeasures.default);
+            expect(mockPrismaService.measure.findMany).toHaveBeenCalledTimes(1);
         });
 
-        it('should throw an exception that no measurements were found', async () => {
+        it('should list all measures of a type', async () => {
             // Arrange
             jest.spyOn(mockPrismaService.measure, 'findMany').mockResolvedValueOnce(
-                RESPONSES.measuresPrismaResponse.only_water
+                RESPONSES.prismaFindMany.onlyWater
             );
 
             // Act
-            const result = await customerService.listMeasures(UUIDS[0], undefined)
+            const response = await customerService.listMeasures(
+                UUIDS[0], MeasureType.WATER
+            );
 
             // Assert
-            expect(result).toEqual(RESPONSES.measuresResponse.only_water)
+            expect(response).toEqual(RESPONSES.listMeasures.onlyWater);
+            expect(mockPrismaService.measure.findMany).toHaveBeenCalledTimes(1);
+        });
+
+        it('should return MeasuresNotFoundException when no measures were found', async () => {
+            // Arrange
+            jest.spyOn(mockPrismaService.measure, 'findMany').mockResolvedValueOnce(
+                undefined
+            );
+
+            // Assert
+            await expect(customerService.listMeasures(UUIDS[0]))
+                .rejects
+                .toThrowError(EXCEPTIONS.measuresNotFound);
+            expect(mockPrismaService.measure.findMany).toHaveBeenCalledTimes(1);
         });
     });
 });

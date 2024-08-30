@@ -8,82 +8,80 @@ import { PrismaService } from '@core/services/prisma.service';
 import { GeminiService } from '@gemini/services/gemini.service';
 import { ImageService } from '@image/services/image.service';
 
-import { InvalidDataException } from '@core/exceptions/invalid-data.exception';
 import { DoubleReportException } from '@measure/exceptions/double-report.exception';
 import { MeasureNotFoundException } from '@measure/exceptions/measure-not-found.exception';
-import { MeasuresNotFoundException } from '@measure/exceptions/measures-not-found.exception';
-import { InvalidMeasureTypeException } from '@measure/exceptions/invalid-measure-type.exception';
 import { ConfirmationDuplicateException } from '@measure/exceptions/confirmation-duplicate.exception';
 
 const UUIDS = Array.from({ length: 5 }, () => uuid.v4());
 
-const REQUESTS = {
-    uploadRequest: {
-        ok: {
-            customerCode: UUIDS[0],
-            image: 'base64 image',
-            measureDatetime: new Date().toISOString(),
-            measureType: MeasureType.WATER
-        }
-    },
-    confirmRequest: {
-        default: {
-            measureUuid: UUIDS[2],
-            confirmedValue: 100
-        },
-    }
+const EXCEPTIONS = {
+    doubleReport: new DoubleReportException(),
+    duplicate: new ConfirmationDuplicateException(),
+    measureNotFound: new MeasureNotFoundException()
 }
 
 const RESPONSES = {
-    uploadSuccessResponse: {
+    uploadSuccess: {
         default: {
             imageUrl: 'URL',
             measureValue: 20,
             measureUuid: UUIDS[1]
         }
     },
-    confirmSuccessResponse: {
+    confirmSuccess: {
         default: {
             success: true
         }
     },
-    saveImageResponse: {
+    prismaCreate: {
         default: {
-            imageBase64: 'BASE64',
-            url: 'URL',
-            filePath: 'FILE_PATH',
-            filename: 'FILENAME'
+            id: UUIDS[1],
+            imageUrl: 'URL',
+            value: 20
         }
     },
-    analyzeImageResponse: {
+    prismaFindFirst: {
+        founded: {},
+        not_founded: undefined,
+        confirmed: {
+            hasConfirmed: true
+        },
+        not_confirmed: {
+            hasConfirmed: false
+        }
+    },
+    prismaUpdate: {
+        default: {}
+    },
+    analyzeImage: {
         default: {
             text: '[20]'
         }
     },
-    prismaMeasureCreate: {
+    saveImage: {
         default: {
-            id: UUIDS[1],
-            value: 20,
-            imageUrl: 'URL'
-        }
-    },
-    prismaMeasureFindFirst: {
-        founded: {},
-        notFounded: undefined,
-        confirmed: {
-            hasConfirmed: true
+            imageBase64: 'base64image',
+            url: 'URL'
         }
     }
-}
+};
 
-const EXCEPTIONS = {
-    invalidData: new InvalidDataException([]),
-    doubleReport: new DoubleReportException(),
-    duplicate: new ConfirmationDuplicateException(),
-    measureNotFound: new MeasureNotFoundException(),
-    measuresNotFound: new MeasuresNotFoundException(),
-    invalidMeasureType: new InvalidMeasureTypeException()
-}
+const REQUESTS = {
+    upload: {
+        valid: {
+            customerCode: UUIDS[0],
+            image: 'base64 image',
+            measureDatetime: new Date().toISOString(),
+            measureType: MeasureType.WATER
+        }
+    },
+    confirm: {
+        valid: {
+            measureUuid: UUIDS[1],
+            confirmedValue: 100
+        }
+    }
+};
 
 describe('MeasureService', () => {
     let measureService: MeasureService;
@@ -91,17 +89,25 @@ describe('MeasureService', () => {
     const mockPrismaService = {
         measure: {
             findFirst: jest.fn(),
-            create: jest.fn(),
-            update: jest.fn()
+            create: jest.fn().mockResolvedValue(
+                RESPONSES.prismaCreate.default
+            ),
+            update: jest.fn().mockResolvedValue(
+                RESPONSES.prismaUpdate.default
+            )
         }
     };
 
     const mockGeminiService = {
-        analyzeImage: jest.fn()
+        analyzeImage: jest.fn().mockResolvedValue(
+            RESPONSES.analyzeImage.default
+        )
     };
 
     const mockImageService = {
-        saveImage: jest.fn()
+        saveImage: jest.fn().mockResolvedValue(
+            RESPONSES.saveImage.default
+        )
     };
 
     beforeEach(async () => {
@@ -127,7 +133,7 @@ describe('MeasureService', () => {
     });
 
     afterEach(() => {
-        jest.resetAllMocks();
+        jest.clearAllMocks();
     });
 
     it('should be defined', () => {
@@ -136,38 +142,29 @@ describe('MeasureService', () => {
 
     describe('register', () => {
         it('should return a response successfully', async () => {
-            // Arrange
-            jest.spyOn(mockImageService, 'saveImage').mockResolvedValueOnce(
-                RESPONSES.saveImageResponse.default
-            );
-            jest.spyOn(mockGeminiService, 'analyzeImage').mockResolvedValueOnce(
-                RESPONSES.analyzeImageResponse.default
-            );
-            jest.spyOn(mockPrismaService.measure, 'create').mockResolvedValueOnce(
-                RESPONSES.prismaMeasureCreate.default
-            );
-
             // Act
-            const response = await measureService.register(REQUESTS.uploadRequest.ok);
+            const response = await measureService.register(
+                REQUESTS.upload.valid
+            );
 
             // Assert
-            expect(response).toEqual(RESPONSES.uploadSuccessResponse.default);
+            expect(response).toEqual(RESPONSES.uploadSuccess.default);
             expect(mockPrismaService.measure.create).toHaveBeenCalledTimes(1);
             expect(mockImageService.saveImage).toHaveBeenCalledTimes(1);
             expect(mockGeminiService.analyzeImage).toHaveBeenCalledTimes(1);
         });
 
-        it('there is already a reading for this type in the current month', async () => {
+        it('should return DoubleReportException when already has a menasure of this type in current month', async () => {
             // Arrange
             jest.spyOn(mockPrismaService.measure, 'findFirst').mockResolvedValueOnce(
-                RESPONSES.prismaMeasureFindFirst.founded
+                RESPONSES.prismaFindFirst.founded
             );
 
             // Assert
-            await expect(measureService.register(REQUESTS.uploadRequest.ok))
+            await expect(measureService.register(REQUESTS.upload.valid))
                 .rejects
                 .toThrowError(EXCEPTIONS.doubleReport);
-
+            
             expect(mockPrismaService.measure.create).toHaveBeenCalledTimes(0);
             expect(mockImageService.saveImage).toHaveBeenCalledTimes(0);
             expect(mockGeminiService.analyzeImage).toHaveBeenCalledTimes(0);
@@ -178,44 +175,59 @@ describe('MeasureService', () => {
         it('should return a response successfully', async () => {
             // Arrange
             jest.spyOn(mockPrismaService.measure, 'findFirst').mockResolvedValueOnce(
-                RESPONSES.prismaMeasureFindFirst.founded
-            );
-            jest.spyOn(mockPrismaService.measure, 'update').mockResolvedValueOnce(
-                REQUESTS.confirmRequest.default
+                RESPONSES.prismaFindFirst.founded
             );
 
             // Act
-            const response = await measureService.confirm(REQUESTS.confirmRequest.default);
-
-            // Assert
-            expect(response).toEqual(RESPONSES.confirmSuccessResponse.default);
-            expect(mockPrismaService.measure.update).toHaveBeenCalledTimes(1);
-        });
-
-        it('measure not found', async () => {
-            // Arrange
-            jest.spyOn(mockPrismaService.measure, 'findFirst').mockResolvedValueOnce(
-                RESPONSES.prismaMeasureFindFirst.notFounded
+            const response = await measureService.confirm(
+                REQUESTS.confirm.valid
             );
 
             // Assert
-            await expect(measureService.confirm(REQUESTS.confirmRequest.default))
+            expect(response).toEqual(RESPONSES.confirmSuccess.default);
+            expect(mockPrismaService.measure.update).toHaveBeenCalledTimes(1);
+        });
+
+        it('should return MeasureNotFoundException when measure does not exists', async () => {
+            // Arrange
+            jest.spyOn(mockPrismaService.measure, 'findFirst').mockResolvedValueOnce(
+                RESPONSES.prismaFindFirst.not_founded
+            );
+
+            // Assert
+            await expect(measureService.confirm(REQUESTS.confirm.valid))
                 .rejects
                 .toThrowError(EXCEPTIONS.measureNotFound);
             expect(mockPrismaService.measure.update).toHaveBeenCalledTimes(0);
         });
 
-        it('measure duplicated', async () => {
+        it('should return ConfirmationDuplicateException when measure has already been confirmed', async () => {
             // Arrange
             jest.spyOn(mockPrismaService.measure, 'findFirst').mockResolvedValueOnce(
-                RESPONSES.prismaMeasureFindFirst.confirmed
+                RESPONSES.prismaFindFirst.confirmed
             );
 
             // Assert
-            await expect(measureService.confirm(REQUESTS.confirmRequest.default))
+            await expect(measureService.confirm(REQUESTS.confirm.valid))
                 .rejects
                 .toThrowError(EXCEPTIONS.duplicate);
             expect(mockPrismaService.measure.update).toHaveBeenCalledTimes(0);
+        });
+
+        it('should return a success response even if it finds a measure', async () => {
+            // Arrange
+            jest.spyOn(mockPrismaService.measure, 'findFirst').mockResolvedValueOnce(
+                RESPONSES.prismaFindFirst.not_confirmed
+            );
+
+            // Act
+            const response = await measureService.confirm(
+                REQUESTS.confirm.valid
+            );
+
+            // Assert
+            expect(response).toEqual(RESPONSES.confirmSuccess.default);
+            expect(mockPrismaService.measure.update).toHaveBeenCalledTimes(1);
         });
     });
 });
