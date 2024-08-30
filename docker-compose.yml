@@ -9,6 +9,7 @@ services:
             - DATABASE_URL=postgres://user:password@postgres:5432/db
             - PORT=3000
             - NODE_ENV=production
+            - GLOBAL_PREFIX=""
         ports:
             - '3000:3000'
     
