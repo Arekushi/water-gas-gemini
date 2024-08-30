@@ -15,7 +15,7 @@ import { ListMeasuresCustomerResponse } from '@measure/domain/responses/customer
 import { ListMeasuresSwagger } from '@measure/swagger/customer.swagger';
 
 @ApiTags('Customer')
-@Controller('customer')
+@Controller()
 export class CustomerController {
 
     constructor(

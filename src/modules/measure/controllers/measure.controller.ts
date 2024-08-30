@@ -17,7 +17,7 @@ import { ConfirmResponse } from '@measure/domain/responses/confirm.response';
 import { ConfirmSwagger, UploadSwagger } from '@measure/swagger/measure.swagger';
 
 @ApiTags('Measure')
-@Controller('measure')
+@Controller()
 export class MeasureController {
 
     constructor(
