@@ -1,0 +1,14 @@
+node_modules
+.vscode
+test
+assets
+.env.production
+.env.development
+.gitignore
+.git
+.gitattributes
+.prettierrc
+.dockerignore
+.editorconfig
+Dockerfile
+README.md

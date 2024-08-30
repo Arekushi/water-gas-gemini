@@ -15,12 +15,10 @@
         "build": "nest build",
         "prebuild": "rimraf ./dist",
         "postinstall": "npm run build",
-        "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
         "start": "nest start",
         "start:dev": "dotenvx run -f .env.development -- nest start --watch",
         "start:debug": "nest start --debug --watch",
-        "start:prod": "node dist/main",
-        "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+        "start:prod": "dotenvx run -f .env -- node dist/src/main",
         "test": "jest",
         "test:watch": "jest --watch",
         "test:cov": "jest --coverage",
@@ -30,7 +28,9 @@
         "migrate": "prisma migrate dev",
         "postmigrate": "npm run seed",
         "push": "prisma db push",
-        "seed": "prisma db seed"
+        "seed": "prisma db seed",
+        "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+        "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\""
     },
     "dependencies": {
         "@arekushii/ts-aspect": "^4.1.2",

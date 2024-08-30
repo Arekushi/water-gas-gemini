@@ -20,7 +20,7 @@ const appConfig: AppConfig = {
     port: parseInt(process.env.PORT) || 8080,
     url: process.env.URL || 'http://localhost',
     swagger: {
-        enabled: toBoolean(process.env.SWAGGER) || false,
+        enabled: toBoolean(process.env.SWAGGER) || true,
         title: 'Water Gas Gemini API',
         route: 'api',
         description: 'Water and gas consumption reading service',
