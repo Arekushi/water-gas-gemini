@@ -1,7 +1,7 @@
 
 import { Aspect, AspectContext } from '@arekushii/ts-aspect';
 import { UploadRequest } from '@measure/domain/requests/upload.request';
-import { PrismaService } from '@src/core/services/prisma.service';
+import { PrismaService } from '@core/services/prisma.service';
 import { DoubleReportException } from '@measure/exceptions/double-report.exception';
 
 

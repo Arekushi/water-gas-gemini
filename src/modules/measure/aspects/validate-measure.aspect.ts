@@ -1,6 +1,6 @@
 
 import { Aspect, AspectContext } from '@arekushii/ts-aspect';
-import { PrismaService } from '@src/core/services/prisma.service';
+import { PrismaService } from '@core/services/prisma.service';
 import { ConfirmRequest } from '@measure/domain/requests/confirm.request';
 import { MeasureNotFoundException } from '@measure/exceptions/measure-not-found.exception';
 import { ConfirmationDuplicateException } from '@measure/exceptions/confirmation-duplicate.exception';
