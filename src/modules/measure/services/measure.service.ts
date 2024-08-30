@@ -34,13 +34,13 @@ export class MeasureService {
             measureDatetime,
             measureType
         } = request;
-
         const id = uuid.v4();
 
         const { imageBase64, url } = await this.imageService.saveImage({
             image: image,
             filename: id
         });
+        
         const geminiResponse = await this.measure(imageBase64);
 
         const measure = await this.prisma.measure.create({
