@@ -3,7 +3,7 @@ export interface DatabaseConfig {
 }
 
 const databaseConfig: DatabaseConfig = {
-    url: process.env.DATABASE_URL || 'file:./dev.db'
+    url: process.env.DATABASE_URL
 }
 
 export { databaseConfig }
