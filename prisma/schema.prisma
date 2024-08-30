@@ -10,12 +10,12 @@ generator client {
 
 generator dbml {
     provider            = "prisma-dbml-generator"
-    projectDatabaseType = "sqlite"
+    projectDatabaseType = "postgresql"
     projectName         = "water-gas-gemini-api"
 }
 
 datasource db {
-    provider = "sqlite"
+    provider = "postgresql"
     url      = env("DATABASE_URL")
 }
 
