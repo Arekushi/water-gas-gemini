@@ -3,7 +3,7 @@
 //// ------------------------------------------------------
 
 Project "water-gas-gemini-api" {
-  database_type: 'sqlite'
+  database_type: 'postgresql'
   Note: ''
 }
 
