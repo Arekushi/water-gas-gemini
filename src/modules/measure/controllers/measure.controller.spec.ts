@@ -1,100 +1,111 @@
-// import * as uuid from 'uuid';
-// import * as fs from 'fs';
+import * as uuid from 'uuid';
 
-// import { Test, TestingModule } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 
-// import { MeasureController } from '@measure/controllers/measure.controller';
-// import { MeasureService } from '@measure/services/measure.service';
-// import { UploadRequest } from '@measure/domain/requests/upload.request';
-// import { UploadSuccessResponse } from '@measure/domain/responses/upload.response';
-// import { ConfirmRequest } from '@measure/domain/requests/confirm.request';
-// import { ConfirmResponse } from '@measure/domain/responses/confirm.response';
-// import { MeasureType } from '@measure/enums/measure-type.enum';
-// import { InvalidDataException } from '@src/core/exceptions/invalid-data.exception';
+import { MeasureController } from '@measure/controllers/measure.controller';
+import { MeasureService } from '@measure/services/measure.service';
+import { MeasureType } from '@measure/enums/measure-type.enum';
 
-// const REGISTER_VALUE: UploadSuccessResponse = {
-//     imageUrl: 'https:...',
-//     measureValue: 123,
-//     measureUuid: 'UUID'
-// };
+const UUIDS = Array.from({ length: 5 }, () => uuid.v4());
 
-// describe('MeasureController', () => {
-//     let controller: MeasureController;
-//     let service: MeasureService;
+const RESPONSES = {
+    upload: {
+        success: {
+            imageUrl: 'https:...',
+            measureValue: 123,
+            measureUuid: 'UUID'
+        }
+    },
+    confirm: {
+        success: {
+            success: true
+        }
+    }
+};
 
-//     const mockMeasureService = {
-//         register: jest.fn(),
-//         confirm: jest.fn(),
-//         measure: jest.fn()
-//     }
+const REQUESTS = {
+    upload: {
+        valid: {
+            customerCode: UUIDS[0],
+            image: 'base64image',
+            measureDatetime: new Date().toISOString(),
+            measureType: MeasureType.WATER
+        }
+    },
+    confirm: {
+        valid: {
+            measureUuid: uuid.v4(),
+            confirmedValue: 10
+        }
+    }
+};
 
-//     beforeEach(async () => {
-//         const module: TestingModule = await Test.createTestingModule({
-//             controllers: [
-//                 MeasureController
-//             ],
-//             providers: [{
-//                 provide: MeasureService,
-//                 useValue: mockMeasureService
-//             }],
-//         }).compile();
+describe('MeasureController', () => {
+    let measureController: MeasureController;
 
-//         controller = module.get<MeasureController>(MeasureController);
-//         service = module.get<MeasureService>(MeasureService);
-//     });
+    const mockMeasureService = {
+        register: jest.fn(),
+        confirm: jest.fn(),
+        measure: jest.fn()
+    };
 
-//     it('should be defined', () => {
-//         expect(controller).toBeDefined();
-//         expect(service).toBeDefined();
-//     });
+    beforeEach(async () => {
+        const module: TestingModule = await Test.createTestingModule({
+            controllers: [
+                MeasureController
+            ],
+            providers: [{
+                provide: MeasureService,
+                useValue: mockMeasureService
+            }],
+        }).compile();
 
-//     describe('upload', () => {
-//         it ('should return upload success response', async () => {
-//             // Arrange
-//             jest.spyOn(service, 'register').mockResolvedValue(REGISTER_VALUE);
+        measureController = module.get<MeasureController>(MeasureController);
+    });
 
-//             const request: UploadRequest = {
-//                 customerCode: uuid.v4(),
-//                 measureDatetime: new Date().toISOString(),
-//                 measureType: MeasureType.WATER,
-//                 image: 'base64...',
-//             };
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
 
-//             // Act
-//             const result = await controller.upload(request);
+    it('should be defined', () => {
+        expect(measureController).toBeDefined();
+    });
 
-//             // Assert
-//             expect(result).toEqual(REGISTER_VALUE);
-//             expect(service.register).toHaveBeenCalledTimes(1);
-//         });
+    describe('upload', () => {
+        it('should return a valid response', async () => {
+            // Arrange
+            jest.spyOn(mockMeasureService, 'register').mockResolvedValueOnce(
+                RESPONSES.upload.success
+            );
 
-//         it ('should throw invalid data exception', () => {
-//             // Arrange
-//             const request: UploadRequest = {
-//                 customerCode: uuid.v4(),
-//                 measureDatetime: new Date().toISOString(),
-//                 measureType: MeasureType.WATER,
-//                 image: 'base64...',
-//             };
+            // Act
+            const response = await measureController.upload(
+                REQUESTS.upload.valid
+            );
 
-//             jest.spyOn(service, 'register').mockRejectedValueOnce(
-//                 new Error()
-//             );
+            // Assert
+            expect(response).toEqual(RESPONSES.upload.success);
+            expect(mockMeasureService.register).toHaveBeenCalledTimes(1);
+            expect(mockMeasureService.register).toHaveBeenCalledWith(REQUESTS.upload.valid);
+        });
+    });
 
-//             // Assert
-//             expect(controller.upload(request)).rejects.toThrowError();
-//         });
-//     });
+    describe('confirm', () => {
+        it('should return a valid response', async () => {
+            // Arrange
+            jest.spyOn(mockMeasureService, 'confirm').mockResolvedValueOnce(
+                RESPONSES.confirm.success
+            );
 
-//     // describe('confirm', () => {
-//     //     const request: ConfirmRequest = {
-//     //         measureUuid: uuid.v4(),
-//     //         confirmedValue: 10
-//     //     };
+            // Act
+            const response = await measureController.confirm(
+                REQUESTS.confirm.valid
+            );
 
-//     //     it('should be called 1 time', async () => {
-//     //         const response = await controller.confirm(request)
-//     //         expect(mockMeasureService.confirm).toHaveBeenCalledTimes(1);
-//     //     });
-//     // });
-// });
+            // Assert
+            expect(response).toEqual(RESPONSES.confirm.success);
+            expect(mockMeasureService.confirm).toHaveBeenCalledTimes(1);
+            expect(mockMeasureService.confirm).toHaveBeenCalledWith(REQUESTS.confirm.valid);
+        });
+    });
+});
