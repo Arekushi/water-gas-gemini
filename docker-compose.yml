@@ -6,10 +6,10 @@ services:
         depends_on:
             - postgres
         environment:
-            - DATABASE_URL=postgres://user:password@postgres:5432/db
-            - PORT=3000
-            - NODE_ENV=production
-            - GLOBAL_PREFIX=""
+            DATABASE_URL: postgres://user:password@postgres:5432/db
+            PORT: 3000
+            NODE_ENV: production
+            GLOBAL_PREFIX: ""
         ports:
             - '3000:3000'
     
@@ -18,6 +18,6 @@ services:
         ports:
             - "35000:5432"
         environment:
-            - POSTGRES_USER=user
-            - POSTGRES_PASSWORD=password
-            - POSTGRES_DB=DB
+            POSTGRES_USER: user
+            POSTGRES_PASSWORD: password
+            POSTGRES_DB: DB
